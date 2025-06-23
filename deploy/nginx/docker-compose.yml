@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  nginx:
+    build:
+      context: . # 当前目录，必须包含 docker-file 以及 default.conf
+      dockerfile: docker-file # 指定自定义 Dockerfile 的文件名
+    container_name: file-service-nginx
+    ports:
+      - "82:80"
+    volumes:
+      # :ro 表示只读
+      - "E:\\05DATA\\05images:/usr/share/nginx/html/images:ro"

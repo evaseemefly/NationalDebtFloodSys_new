@@ -1,0 +1,43 @@
+http:
+  routers:
+    dashboard-router: # 测试加入dashboard路由的配置
+      rule: "PathPrefix(`/dashboard`)" # 匹配 /dashboard 路径
+      service: api@internal
+      entryPoints:
+        - dashboard
+    forecast-router:
+      rule: "PathPrefix(`/typhoon`)" # 匹配 /forecast 路由
+      service: typhoon-service
+      entryPoints:
+        - web
+    task-router:
+      rule: "PathPrefix(`/task`)" # 匹配 /station 路由
+      service: task-service
+      entryPoints:
+        - web
+    coverage-router:
+      rule: "PathPrefix(`/coverage`)" # 匹配 /station 路由
+      service: task-service
+      entryPoints:
+        - web
+    flood-router:
+      rule: "PathPrefix(`/flood`)" # 匹配 /station 路由
+      service: task-service
+      entryPoints:
+        - web
+    geo-router:
+      rule: "PathPrefix(`/geo`)" # 匹配 /station 路由
+      service: task-service
+      entryPoints:
+        - web
+
+  services:
+    typhoon-service:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:8075" # /typhoon 注意使用docker部署时若直接访问宿主机的服务使用以上方式
+
+    task-service:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:8076" # /station 映射到远程服务
