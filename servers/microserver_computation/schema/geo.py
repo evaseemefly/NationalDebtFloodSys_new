@@ -28,7 +28,10 @@ def tuple_to_list(obj: Any) -> Any:
 
 class GeoJSONPolygon(BaseModel):
     """GeoJSON 多边形几何对象"""
-    type: Literal["Polygon"] = Field("Polygon", const=True)
+    # type: Literal["Polygon"] = Field("Polygon", const=True)
+    # TODO:[-] 25-06-23
+    # 在你当前的 Pydantic 版本中（2.5.3），要实现字段恒定为某个值，只需要使用 Literal 类型注解即可——你不需要再使用 Field(...) 设置默认值和 const=True。
+    type: Literal["Polygon"]
     coordinates: List[List[List[float]]]
 
     @validator("coordinates")

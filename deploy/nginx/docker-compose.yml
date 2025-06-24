@@ -10,4 +10,6 @@ services:
       - "82:80"
     volumes:
       # :ro 表示只读
-      - "E:\\05DATA\\05images:/usr/share/nginx/html/images:ro"
+      # - "E:\\05DATA\\05images:/usr/share/nginx/html/images:ro"
+      # mac上的配置
+      - "/Users/evaseemefly/03data/01nginx_data/images:/usr/share/nginx/html/images:ro"

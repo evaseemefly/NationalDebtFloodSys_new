@@ -41,7 +41,7 @@ class TyphoonPointSchema(BaseModel):
     forecastDt: datetime
     lat: float
     lon: float
-    bp: int
+    bp: float
     isForecast: bool
     tyType: str
 
@@ -62,5 +62,5 @@ class TyphoonPathComplexSchema(BaseModel):
     tyCode: str
     issueTs: int
     groupType: str
-    taskId: Optional[int]
+    # taskId: Optional[int]
     tyPathList: Optional[List[TyphoonPointSchema]]

@@ -23,7 +23,10 @@ class DBConfig:
     TODO:[-] 23-06-28 此处修改为通过 consul 统一获取配置信息
     """
 
-    driver = CONSUL_DB_CONFIG.get('driver')
+    # TODO:[*] 25-06-23 由于mac上mysql client客户端一直有问题，当前使用的driver为："driver" : "mysql+mysqldb",
+    # 修改为 pymysql
+    # driver = CONSUL_DB_CONFIG.get('driver')
+    driver = 'mysql+pymysql'
     host = CONSUL_DB_CONFIG.get('host')
     # 宿主机的mysql服务
     # host = 'host.docker.internal'

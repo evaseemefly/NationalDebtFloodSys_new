@@ -213,6 +213,31 @@ class StationInfo(Base):
     gmt_modify_time: Mapped[Optional[datetime]] = mapped_column(DateTime(6))
 
 
+class StationForecastRealdataModel(Base):
+    """
+        站点预报增水——需要加入用户名——按用户名分表存储
+    """
+    __tablename__ = "station_forecast_realdata_user1"
+    __table_args__ = {"schema": "sys_flood_nationaldebt"}
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    is_del: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    ty_code: Mapped[str] = mapped_column(String(200), nullable=False, comment="台风编号")
+    gp_id: Mapped[int] = mapped_column(Integer, nullable=False, comment="group id", default=-1)
+    station_code: Mapped[str] = mapped_column(String(200), nullable=False, comment="站代号")
+    forecast_dt: Mapped[Optional[datetime]] = mapped_column(DateTime(2), comment="预报时间(utc)")
+    forecast_ts: Mapped[int] = mapped_column(Integer, comment="预报时间戳")
+    forecast_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    surge: Mapped[float] = mapped_column(Float, nullable=False, comment="预报增水")
+    issue_time: Mapped[str] = mapped_column(Integer, comment="发布时间")
+    gmt_create_time: Mapped[Optional[datetime]] = mapped_column(DateTime(6), default=datetime.utcnow())
+    gmt_modify_time: Mapped[Optional[datetime]] = mapped_column(DateTime(6), default=datetime.utcnow())
+    grouppath_type: Mapped[int] = mapped_column(Integer, nullable=False, comment="集合路径枚举", default=-1)
+
+    def __repr__(self) -> str:
+        return (f"StationForecastRealdata(id={self.id}, ty_code={self.ty_code}, "
+                f"station_code={self.station_code}, forecast_dt={self.forecast_dt})")
+
 class GeoPolygon(Base):
     """存储 GeoJSON 多边形数据的模型"""
 

@@ -1,4 +1,8 @@
-from pydantic import BaseModel
+from typing import List
+
+from pydantic import BaseModel, ConfigDict
+
+from common.enums import TyphoonGroupEnum
 
 
 class StionInfoSchema(BaseModel):
@@ -8,5 +12,21 @@ class StionInfoSchema(BaseModel):
     lon: float
     desc: str
 
-    class Config:
-        orm_mode = True  # 旧版本
+    # class Config:
+    #     orm_mode = True  # 旧版本
+
+    model_config = ConfigDict(from_attributes=True)  # 新版本
+
+
+class StationSurgeSchema(BaseModel):
+    station_code: str
+    forecast_ts: int
+    issue_time: int
+    surge: float
+
+    model_config = ConfigDict(from_attributes=True)  # 新版本
+
+
+class StationGroupSurgeSchema(BaseModel):
+    group_type: TyphoonGroupEnum
+    surge_list: List[StationSurgeSchema]
