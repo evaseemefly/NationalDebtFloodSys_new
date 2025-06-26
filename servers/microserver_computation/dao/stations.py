@@ -28,8 +28,9 @@ class StationDao(BaseDao):
 
         return schemas
 
-    def get_station_groupsurge(self, station_code: str, ty_code: str, grouppath: TyphoonGroupEnum) -> List[
-        StationGroupSurgeSchema]:
+    def get_station_groupsurge(self, station_code: str, ty_code: str, issue_ts: int, grouppath: TyphoonGroupEnum) -> \
+            List[
+                StationGroupSurgeSchema]:
         """
             根据参数获取对应的集合
         @param station_code:
@@ -46,7 +47,8 @@ class StationDao(BaseDao):
                 group_stmt = select(StationForecastRealdataModel.grouppath_type).where(
                     StationForecastRealdataModel.is_del == False,
                     StationForecastRealdataModel.station_code == station_code,
-                    StationForecastRealdataModel.ty_code == ty_code).distinct(
+                    StationForecastRealdataModel.ty_code == ty_code,
+                    StationForecastRealdataModel.issue_time == issue_ts).distinct(
                     StationForecastRealdataModel.grouppath_type)
                 grouppath: List[int] = session.execute(group_stmt).scalars().all()
                 # 尝试使用 group by grouppath 进行分组查询
@@ -56,6 +58,7 @@ class StationDao(BaseDao):
                         StationForecastRealdataModel.is_del == False,
                         StationForecastRealdataModel.station_code == station_code,
                         StationForecastRealdataModel.ty_code == ty_code,
+                        StationForecastRealdataModel.issue_time == issue_ts,
                         StationForecastRealdataModel.grouppath_type == temp_group).order_by(
                         StationForecastRealdataModel.forecast_ts)
                     query: List[StationForecastRealdataModel] = session.execute(stmt).scalars().all()

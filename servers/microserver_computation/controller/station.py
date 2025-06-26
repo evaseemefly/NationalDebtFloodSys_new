@@ -10,6 +10,7 @@ from pydantic import ValidationError
 from common.default import DEFAULT_CODE
 from common.enums import TyphoonGroupEnum
 from common.exceptions import NoExistTargetTyphoon
+from common.util import ms_2_s
 from dao.stations import StationDao
 from schema.common import ResponseModel
 from schema.stations import StionInfoSchema, StationGroupSurgeSchema
@@ -45,14 +46,16 @@ async def get(station_dao: StationDao = Depends(get_station_dao)):
         )
 
 
-@app.get('/surge/group', summary="获取所有站点信息", response_model=List[StationGroupSurgeSchema])
-async def get_station_group_surgelist(station_code: str, ty_code: str, group: int,
+@app.get('/surge/group/', summary="获取所有站点信息", response_model=List[StationGroupSurgeSchema])
+async def get_station_group_surgelist(station_code: str, ty_code: str, issue_ts: int,
                                       station_dao: StationDao = Depends(get_station_dao)):
     """
         获取对应站点的增水集合
     @return:
     """
-    group_type: TyphoonGroupEnum = TyphoonGroupEnum(group)
+    group_type: TyphoonGroupEnum = TyphoonGroupEnum.GROUP_CENTER
+    # TODO:[-] 25-06-25 注意将 ms => s
+    issue_ts_seconds: int = ms_2_s(issue_ts)
     # station_dao = StationDao()
-    station_groups = station_dao.get_station_groupsurge(station_code, ty_code, group_type)
+    station_groups = station_dao.get_station_groupsurge(station_code, ty_code, issue_ts_seconds, group_type)
     return station_groups
