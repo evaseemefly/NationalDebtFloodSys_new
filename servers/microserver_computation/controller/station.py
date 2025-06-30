@@ -13,7 +13,7 @@ from common.exceptions import NoExistTargetTyphoon
 from common.util import ms_2_s
 from dao.stations import StationDao
 from schema.common import ResponseModel
-from schema.stations import StionInfoSchema, StationGroupSurgeSchema
+from schema.stations import StionInfoSchema, StationGroupSurgeSchema, StationTideSchema
 from schema.task import TyGroupTaskSchema
 from schema.typhoon import TyphoonPathSchema, TyphoonPathComplexSchema, TyphoonDistGroupSchema
 
@@ -59,3 +59,10 @@ async def get_station_group_surgelist(station_code: str, ty_code: str, issue_ts:
     # station_dao = StationDao()
     station_groups = station_dao.get_station_groupsurge(station_code, ty_code, issue_ts_seconds, group_type)
     return station_groups
+
+
+@app.get('/tide/list/', summary="获取所有站点信息", response_model=List[StationTideSchema])
+async def get_station_group_surgelist(station_code: str, start_ts: int, end_ts: int,
+                                      station_dao: StationDao = Depends(get_station_dao)):
+    res = station_dao.get_tide_list(station_code, start_ts, end_ts)
+    return res

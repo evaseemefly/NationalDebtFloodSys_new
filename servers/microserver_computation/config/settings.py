@@ -6,7 +6,7 @@ DATABASES = {
     'default': {
         # mac 尝试使用
         # 'ENGINE': 'mysqldb',  # 数据库引擎
-        # TODO:[*] 25-06-23 由于mac上mysql client客户端一直有问题，当前使用的driver为："driver" : "mysql+mysqldb",
+        # TODO:[-] 25-06-23 由于mac上mysql client客户端一直有问题，当前使用的driver为："driver" : "mysql+mysqldb",
         # 修改为 pymysql
         'ENGINE': 'pymysql',  # 数据库引擎
         'NAME': 'sys_flood_nationaldebt',  # 数据库名

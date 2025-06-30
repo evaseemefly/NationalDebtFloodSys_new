@@ -27,6 +27,17 @@ class StationSurgeSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)  # 新版本
 
 
+class StationTideSchema(BaseModel):
+    """
+        StationAstronomicTide
+    """
+    station_code: str
+    ts: int
+    tide: float
+
+    model_config = ConfigDict(from_attributes=True)  # 新版本
+
+
 class StationGroupSurgeSchema(BaseModel):
     group_type: TyphoonGroupEnum
     surge_list: List[StationSurgeSchema]

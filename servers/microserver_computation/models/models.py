@@ -238,6 +238,7 @@ class StationForecastRealdataModel(Base):
         return (f"StationForecastRealdata(id={self.id}, ty_code={self.ty_code}, "
                 f"station_code={self.station_code}, forecast_dt={self.forecast_dt})")
 
+
 class GeoPolygon(Base):
     """存储 GeoJSON 多边形数据的模型"""
 
@@ -308,3 +309,44 @@ class GeoFloodLevelPolygon(Base):
 
     def __repr__(self) -> str:
         return f"<GeoFloodLevelPolygon(id={self.id}, ty_code='{self.ty_code}', gp_id='{self.gp_id}')>"
+
+
+class StationAstronomicTide(Base):
+    """
+    天文潮站点数据表 ORM 模型
+    """
+    __tablename__ = 'station_astronomic_tide'
+
+    # 指定表所在的 schema
+    __table_args__ = ({'schema': 'sys_flood_nationaldebt'},)
+
+    # --- 字段定义 ---
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True, comment="主键ID")
+
+    # 对于可空字段, Python 类型注解为 Optional[<type>] 或 <type> | None
+    is_del: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+
+    gmt_create_time: Mapped[Optional[datetime]] = mapped_column(DateTime, default=datetime.utcnow(),
+                                                                comment="记录创建时间")
+
+    gmt_modify_time: Mapped[Optional[datetime]] = mapped_column(DateTime, default=datetime.utcnow(),
+                                                                comment="记录修改时间")
+
+    station_code: Mapped[Optional[str]] = mapped_column(String(20), comment="站点代码")
+
+    gmt_realtime: Mapped[Optional[datetime]] = mapped_column(DateTime, comment="数据实际时间")
+
+    tide: Mapped[Optional[float]] = mapped_column(Float, comment="天文潮位值")
+
+    ts: Mapped[Optional[int]] = mapped_column(Integer, comment="UNIX时间戳")
+
+    def __repr__(self) -> str:
+        """
+        提供一个清晰的字符串表示形式，便于调试
+        """
+        return (
+            f"<StationAstronomicTide(id={self.id}, "
+            f"station_code='{self.station_code}', "
+            f"gmt_realtime={self.gmt_realtime})>"
+        )

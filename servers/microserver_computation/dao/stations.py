@@ -4,8 +4,8 @@ from sqlalchemy import select
 
 from common.enums import TyphoonGroupEnum
 from dao.base import BaseDao
-from models.models import StationInfo, StationForecastRealdataModel
-from schema.stations import StionInfoSchema, StationSurgeSchema, StationGroupSurgeSchema
+from models.models import StationInfo, StationForecastRealdataModel, StationAstronomicTide
+from schema.stations import StionInfoSchema, StationSurgeSchema, StationGroupSurgeSchema, StationTideSchema
 
 
 class StationDao(BaseDao):
@@ -69,3 +69,27 @@ class StationDao(BaseDao):
         except Exception as ex:
             print(ex)
         pass
+
+    def get_tide_list(self, station_code: str, start_ts: int, end_ts: int) -> List[StationTideSchema]:
+        """
+            获取指定站点的天文潮集合
+        @param station_code:
+        @param start_ts:
+        @param end_ts:
+        @return:
+        """
+        res: List[StationTideSchema] = []
+        try:
+            with self.session as session:
+                stmt = select(StationAstronomicTide).where(StationAstronomicTide.station_code == station_code,
+                                                           StationAstronomicTide.ts >= start_ts,
+                                                           StationAstronomicTide.ts <= end_ts).order_by(
+                    StationAstronomicTide.ts)
+                query: List[StationAstronomicTide] = session.execute(stmt).scalars().all()
+                res = [
+                    StationTideSchema(station_code=temp.station_code, ts=temp.ts, tide=temp.tide) for temp
+                    in query]
+                return res
+        except Exception as ex:
+            print(ex)
+        return res
