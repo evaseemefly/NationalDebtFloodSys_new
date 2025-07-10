@@ -15,6 +15,13 @@ services:
       - ./dynamic.yml:/etc/traefik/dynamic.yml  # 挂载动态配置文件
       - /var/run/docker.sock:/var/run/docker.sock  # 允许 Traefik 管理 Docker 容器
     
+    # --- 新增下面这部分 ---
+    # TODO[-]: 这里的 extra_hosts 是为了在容器内访问宿主机的服务
+    # 如果不需要访问宿主机服务，可以删除这一行
+    # 例如在 macOS 上，Docker Desktop 会自动将 host.docker.internal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    
     networks:
      - traefik-net
 

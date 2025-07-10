@@ -9,6 +9,7 @@ from pydantic import ValidationError
 
 from common.default import DEFAULT_CODE
 from common.exceptions import NoExistTargetTyphoon
+from config.celery_config import celery_app
 from core.jobs import JobGenerateTyphoonPathFile
 from dao.jobs import TaskDao
 from models.mid_models import TyDetailMidModel, TyPathMidModel
@@ -101,3 +102,33 @@ def get(code: str, issue_ts: int):
     @param issue_ts:
     @return:
     """
+
+
+@app.post('/create/agent',
+          summary="创建任务代理")
+async def post(code: str):
+    """
+        根据 ty_code 获取对应台风的路径(实况|预报)
+    :param params:
+    :return:
+    """
+    try:
+        #
+        print(code)
+        # TODO:[*] 25-07-03
+        # 'NoneType' object has no attribute 'Redis'
+        task = celery_app.send_task(
+            'ty_group',  # 必须与 Worker 中定义的 task name 一致
+            # args=[code]
+        )
+        return {
+            "task_id": task.id,
+            "message": "任务已提交，正在后台执行..."
+        }
+
+    except Exception as e:
+        # 异常处理
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
