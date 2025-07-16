@@ -11,18 +11,18 @@ from common.default import DEFAULT_CODE
 from common.exceptions import NoExistTargetTyphoon
 from config.celery_config import celery_app
 from core.jobs import JobGenerateTyphoonPathFile
-from dao.jobs import TaskDao
+from dao.jobs import TaskDao, execute_ty_model
 from models.mid_models import TyDetailMidModel, TyPathMidModel
 from schema.common import ResponseModel
 from schema.task import TyGroupTaskSchema
-from schema.typhoon import TyphoonPathSchema, TyphoonPathComplexSchema
+from schema.typhoon import TyphoonPathSchema, TyphoonPathComplexSchema, TyphoonPathComplexDetailSchema
 
 app = APIRouter()
 
 
 @app.post('/create/typhoon/path',
           summary="获取提交的作业请求")
-async def get(params: TyphoonPathComplexSchema):
+async def post(params: TyphoonPathComplexDetailSchema):
     """
         根据 ty_code 获取对应台风的路径(实况|预报)
     :param params:
@@ -32,8 +32,18 @@ async def get(params: TyphoonPathComplexSchema):
         #
         print(f"Received typhoon path data: {params.dict()}")
         now_ts = arrow.utcnow().int_timestamp
-        job_dao = TaskDao()
-        job_dao.submit_task(1, params)
+        # job_dao = TaskDao()
+        # job_dao.submit_task(1, params)
+        # 环境部署于docker容器中
+        # ('Error 99 connecting to localhost:6379. Cannot assign requested address.',)
+        try:
+            id = execute_ty_model(params)
+        except Exception as e:
+            print(f'当前提交作业执行时发生错误:ERROR_CODE:{e.args}')
+        return {
+            "task_id": id,
+            "message": "任务已提交，正在后台执行..."
+        }
         # 测试——返回提交的数据集
         return ResponseModel(
             code=200,
@@ -41,6 +51,7 @@ async def get(params: TyphoonPathComplexSchema):
             data=params.dict()
         )
 
+    # ImportError('Missing redis library (pip install redis)')
     except Exception as e:
         # 异常处理
         raise HTTPException(

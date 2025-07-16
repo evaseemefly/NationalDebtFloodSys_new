@@ -3,11 +3,32 @@ from typing import List, Optional, Any
 from sqlalchemy import distinct, select
 
 from common.default import MS_UNIT
+from config.celery_config import celery_app
 from core.jobs import JobGenerateTyphoonPathFile, JobGenerateSurgeRasterPathFile
 from dao.base import BaseDao
 from models.models import TaskJobs
 from schema.task import TyGroupTaskSchema
-from schema.typhoon import TyphoonPathComplexSchema
+from schema.typhoon import TyphoonPathComplexSchema, TyphoonPathComplexDetailSchema
+
+
+def execute_ty_model(params: TyphoonPathComplexDetailSchema) -> int:
+    """
+        异步执行台风model
+    @param params:
+    @return:
+    """
+    task_id: int = -1
+    params_dict = params.model_dump()
+    try:
+        task = celery_app.send_task(
+            'ty_group',  # 必须与 Worker 中定义的 task name 一致
+            args=[params_dict]
+        )
+        task_id = task.id
+        return task_id
+    except Exception as e:
+        # TODO:[-] 25-07-15 ERROR: (TypeError('Object of type TyphoonPathComplexDetailSchema is not JSON serializable'),)
+        raise (f'当前提交作业执行时发生错误:ERROR_CODE:{e.args}')
 
 
 class TaskDao(BaseDao):

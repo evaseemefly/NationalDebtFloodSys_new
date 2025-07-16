@@ -32,14 +32,13 @@ if not BROKER_URL or not isinstance(BROKER_URL, str):
     raise ValueError(f"CRITICAL FAILURE: The BROKER_URL is invalid. Value: '{BROKER_URL}'. Cannot create Celery app.")
 
 # 任务序列化和反序列化使用JSON方案
-# TODO:[-] 25-07-15 只采用 json 不使用 pickle
 CELERY_TASK_SERIALIZER = 'json'
 # 读取任务结果使用JSON
 CELERY_RESULT_SERIALIZER = 'json'
 # 任务过期时间，不建议直接写86400，应该让这样的magic数字表述更明显
 CELERY_TASK_RESULT_EXPIRES = 60 * 60 * 24
 # 指定接受的内容类型，是个数组，可以写多个
-# TODO:[-] 25-07-15 只采用 json 不使用 pickle
+# 只接受 json 格式的内容
 CELERY_ACCEPT_CONTENT = ['json']
 
 # 注意：这里只定义了 Celery app 的配置，并不包含任务的实现
@@ -53,7 +52,8 @@ CELERY_ACCEPT_CONTENT = ['json']
 celery_app = Celery(
     'tasks',
     broker=BROKER_URL,
-    backend=RESULT_BACKEND_URL
+    backend=RESULT_BACKEND_URL,
+    include=['celery_worker']  # 确保你的任务模块被包含
 )
 celery_app.conf.update(
     CELERY_TASK_SERIALIZER=CELERY_TASK_SERIALIZER,

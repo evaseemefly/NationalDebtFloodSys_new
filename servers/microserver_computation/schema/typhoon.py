@@ -64,3 +64,38 @@ class TyphoonPathComplexSchema(BaseModel):
     groupType: str
     # taskId: Optional[int]
     tyPathList: Optional[List[TyphoonPointSchema]]
+
+
+class TyphoonDetailInfoSchema(BaseModel):
+    """
+        只包含提交的台风基础信息(名称及编号等)
+    """
+    timeStamp: int
+    tyCode: int
+    tyNameCh: str
+    tyNameEn: str
+
+
+class TyphoonPathComplexDetailSchema(BaseModel):
+    """
+       接收前台提交 filter 后的请求体
+       {
+        tyDetail:{
+                    "tyCode": 2504,
+                    "tyNameCh": "丹娜丝",
+                    "tyNameEn": "DANAS",
+                    "timeStamp": 1752461190841
+                }
+        tyPathList: [{
+                    "forecastDt": "2025-07-06T15:00:00.000Z",
+                    "lat": 23.3,
+                    "lon": 120,
+                    "bp": 950,
+                    "isForecast": false,
+                    "tyType": "STY"
+                }]
+       }
+
+    """
+    tyDetail: TyphoonDetailInfoSchema
+    tyPathList: List[TyphoonPointSchema]
