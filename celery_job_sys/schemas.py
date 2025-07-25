@@ -3,31 +3,8 @@ from typing import List, ForwardRef, Any, Optional, Union
 
 from pydantic import BaseModel, Field
 
+from commons.enums import TYGroupTypeEnum
 
-# 请求数据模型
-# class TyphoonPathSchema(BaseModel):
-#     forecastDt: datetime = Field(..., description="预报时间")
-#     lat: float = Field(..., ge=-90, le=90, description="纬度")
-#     lon: float = Field(..., ge=-180, le=180, description="经度")
-#     bp: float = Field(..., gt=0, description="气压")
-#     isForecast: bool = Field(..., description="是否为预报数据")
-#     tyType: Optional[str] = Field(None, description="台风类型")
-#
-#     class Config:
-#         json_encoders = {
-#             datetime: lambda v: v.isoformat()
-#         }
-#         schema_extra = {
-#             "example": {
-#                 "forecastDt": "2024-04-28T10:30:00",
-#                 "lat": 23.5,
-#                 "lon": 121.5,
-#                 "bp": 998.5,
-#                 "isForecast": True,
-#                 "tyType": "TY"
-#             }
-#         }
-#
 
 class TyphoonDistGroupSchema(BaseModel):
     tyCode: str
@@ -99,3 +76,37 @@ class TyphoonPathComplexDetailSchema(BaseModel):
     """
     tyDetail: TyphoonDetailInfoSchema
     tyPathList: List[TyphoonPointSchema]
+
+
+group_path_switch = {
+    'center': TYGroupTypeEnum.CENTER,
+    'fast': TYGroupTypeEnum.FAST,
+    'left': TYGroupTypeEnum.LEFT,
+    'right': TYGroupTypeEnum.RIGHT,
+    'slow': TYGroupTypeEnum.SLOW
+}
+
+
+def get_group_type(val: str) -> TYGroupTypeEnum:
+    return group_path_switch.get(val)
+
+
+class StationSurgeFileSchema(BaseModel):
+    ty_code: str
+    issue_ts: int
+    forecast_ts: int
+    group_id: int
+    file_name: str
+
+    # group_path_stamp: str
+
+    @property
+    def group_path_stamp(self) -> str:
+        # {AttributeError}AttributeError("type object 'StationSurgeFileSchema' has no attribute 'file_name'")
+        path_stamp: str = self.file_name.split('.')[0].split('_')[-1]
+        return path_stamp
+
+    @property
+    def group_path_type(self) -> TYGroupTypeEnum:
+        path_type: TYGroupTypeEnum = get_group_type(self.group_path_stamp())
+        return path_type
